@@ -1,0 +1,59 @@
+dtype: bfloat16
+flux_path: black-forest-labs/FLUX.1-Fill-dev
+model:
+  add_cond_attn: false
+  attn_mask: false
+  latent_lora: false
+  mask_para:
+    base_ratio: 0.6
+  union_cond_attn: true
+  use_byt5_mask: false
+model_type: flux_fill
+train:
+  accumulate_grad_batches: 4
+  bucket_config:
+    1024px:
+      1:
+      - 1.0
+      - 2
+    512px:
+      1:
+      - 1.0
+      - 8
+    768px:
+      1:
+      - 1.0
+      - 4
+  condition_type: word_fill
+  dataloader_workers: 5
+  dataset:
+    drop_image_prob: 0.1
+    drop_text_prob: 0.1
+    glyph_scale: 1
+    random_select: true
+    type: word
+  gradient_checkpointing: true
+  lora_config:
+    init_lora_weights: gaussian
+    lora_alpha: 256
+    r: 256
+    target_modules: (.*x_embedder|.*(?<!single_)transformer_blocks\.[0-9]+\.norm1\.linear|.*(?<!single_)transformer_blocks\.[0-9]+\.attn\.to_k|.*(?<!single_)transformer_blocks\.[0-9]+\.attn\.to_q|.*(?<!single_)transformer_blocks\.[0-9]+\.attn\.to_v|.*(?<!single_)transformer_blocks\.[0-9]+\.attn\.to_out\.0|.*(?<!single_)transformer_blocks\.[0-9]+\.ff\.net\.2|.*single_transformer_blocks\.[0-9]+\.norm\.linear|.*single_transformer_blocks\.[0-9]+\.proj_mlp|.*single_transformer_blocks\.[0-9]+\.proj_out|.*single_transformer_blocks\.[0-9]+\.attn.to_k|.*single_transformer_blocks\.[0-9]+\.attn.to_q|.*single_transformer_blocks\.[0-9]+\.attn.to_v|.*single_transformer_blocks\.[0-9]+\.attn.to_out)
+  max_steps: -1
+  odm_loss:
+    modelpath: epoch_100.pt
+    w_loss_1: 20
+    w_loss_2: 20
+    w_loss_3: 20
+    w_loss_4: 20
+    w_loss_f: 1
+  optimizer:
+    params:
+      lr: 1
+      safeguard_warmup: true
+      use_bias_correction: true
+      weight_decay: 0.01
+    type: Prodigy
+  reuse_lora_path: reuse.safetensors
+  sample_interval: 2000
+  save_interval: 1000
+  save_path: output_dir
